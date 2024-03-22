@@ -17,7 +17,18 @@ class Repository:
         await self.db.refresh(db_comic)
         return await self.comic_read(db_comic.id)
 
-    async def comic_update(self): ...
+    async def comic_update(self, comic_id: int, comic_update_data: ComicCrete) -> Comic:
+        db_comic = (
+            await self.db.execute(select(Comic).where(Comic.id == comic_id))
+        ).scalar()
+        if db_comic:
+            db_comic.title, db_comic.author = (
+                comic_update_data.title,
+                comic_update_data.author,
+            )
+            await self.db.commit()
+            await self.db.refresh(db_comic)
+            return await self.comic_read(db_comic.id)
 
     async def comic_read(self, comic_id: int) -> Comic | str:
         comic = (
@@ -27,7 +38,15 @@ class Repository:
             return comic
         return "Comic not found"
 
-    async def comic_delete(self): ...
+    async def comic_delete(self, comic_id: int) -> dict | str:
+        db_comic = (
+            await self.db.execute(select(Comic).where(Comic.id == comic_id))
+        ).scalar()
+        if db_comic:
+            await self.db.delete(db_comic)
+            await self.db.commit()
+            return {"status": "true", "message": "The menu has been deleted"}
+        return "Comic not found"
 
     async def rating_create(self): ...
 

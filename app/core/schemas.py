@@ -8,7 +8,7 @@ class ComicCrete(BaseModel):
 
 class ComicRead(ComicCrete):
     id: int
-    rating: float = Field(ge=1, le=5)
+    rating: float = Field(ge=0, le=5)
 
 
 class RatingCreate(BaseModel):
