@@ -1,32 +1,25 @@
-from app.core.db import Base
+from sqlalchemy.orm import relationship
 
-from sqlalchemy import Column, Integer, String, ForeignKey
+from core.db import Base
+
+from sqlalchemy import Column, Integer, String, ForeignKey, Float
 
 
 class Comic(Base):
     __tablename__ = "comics"
-    id = Column(Integer, primary_key=True, unique=True)
+    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     title = Column(String)
     author = Column(String)
-    rating = Column(Integer, default=0)
+    rating = Column(Float, default=0)
+    ratings = relationship(
+        "Rating", back_populates="comic", cascade="all, delete-orphan"
+    )
 
 
 class Rating(Base):
     __tablename__ = "ratings"
-    id = Column(Integer, primary_key=True, unique=True)
+    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     comic_id = Column(ForeignKey("comics.id"))
     user_id = Column(Integer)
-    value = Column(Integer)  # Ограничение от 1 до 5, целые числа
-
-    # Создайте модель Comic с полями:
-    #
-    # id (уникальный идентификатор)
-    # title (название комикса)
-    # author (автор комикса)
-    # rating (рейтинг комикса, по умолчанию 0)
-    # Создайте модель Rating с полями:
-    #
-    # id (уникальный идентификатор)
-    # comic_id (ссылка на комикс)
-    # user_id (идентификатор пользователя, оценившего комикс)
-    # VALUE (оценка пользователя от 1 до 5)
+    value = Column(Integer)
+    comic = relationship("Comic", back_populates="ratings")
