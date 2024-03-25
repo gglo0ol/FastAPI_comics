@@ -1,14 +1,22 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
-class ComicCrete(BaseModel):
+class ComicCreate(BaseModel):
     title: str
     author: str
 
 
-class ComicRead(ComicCrete):
+class ComicRead(ComicCreate):
     id: int
-    rating: float = Field(ge=0, le=5)
+    rating: float = Field(
+        ge=0,
+        le=5,
+    )
+
+    @field_validator("rating")
+    @classmethod
+    def result_check(cls, v: float):
+        return round(v, 1)
 
 
 class RatingCreate(BaseModel):
